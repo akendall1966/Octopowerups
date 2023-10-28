@@ -1,0 +1,23 @@
+template:
+    - sensor:
+        name: currentTS
+        state : >
+            {{as_timestamp(strptime(states('sensor.date_time'),'%Y-%m-%d, %H:%M')) | int(0) }}
+        icon: mdi:calendar-cloc
+
+    - sensor:
+        name: OctoPowerupDuration
+        state: >
+                {{ (states('sensor.octopowerupendts') | int(0) - states('sensor.octopowerupstartts') | int(0))/60 | float(0) }}
+        icon: mdi:calendar-clock
+
+    - sensor:
+        name: OctoPowerupTimeLeft
+        state: > 
+            {% if states('sensor.currentTS') | float(0) < states('sensor.octopowerupendts') |float(0)  and states('sensor.currentTS') | float(0) > states('sensor.octopowerupstartts') |float(0)  %}
+            {{((states('sensor.octopowerupendts') | int(0) - states('sensor.currentTS') | float(0))/60 | float(0))}}
+            {%else%}
+            {{ float(0) }}
+            {% endif %}
+        icon: mdi:calendar-clock
+
