@@ -7,16 +7,10 @@ template:
         event_type: "imap_content"
         id: "custom_event"
         event_data:
-          subject: "Power-ups: Opt in"
+          custom: True
     sensor:
       - name: OctopusPowerUp
-        state: >
-          {% if 'Power-ups: Opt in' in trigger.event.data['subject'] %}
-            powerup
-          {% else %}
-            powerdown
-          {% endif %}
-        
+        state: "{{ trigger.event.data['subject'] }}"
         attributes:
           Message: "{{ trigger.event.data['text'] }}"
           Server: "{{ trigger.event.data['server'] }}"
