@@ -1,6 +1,6 @@
 ## /config/packages/octopowerup.yaml
 ## imap email processing
-sensor:
+
 template:
   - trigger:
       - platform: event
@@ -31,42 +31,43 @@ template:
             {{ state_attr( 'sensor.OctopusPowerUp','Message')
              | regex_replace(find='\r\n', replace="") 
              | regex_findall_index('https:\/\/\S+', index=0) }}
-             
+
       - name: OctoPowerUpDate
         state: >
             {% set t = state_attr( 'sensor.OctopusPowerUp','Subject') 
-             | regex_findall_index('(\d+\/\d+\/\d+)')
-             | regex_replace(find="\/", replace="-") %}
-             {{20}}{{t[6]}}{{t[7]}}{{t[5]}}{{t[8]}}{{t[0]}}{{t[1]}}{{t[2]}}{{t[3]}}{{t[4]}}
- 
+             | regex_findall_index('(\d{1,2})\/(\d{1,2})\/(\d{2,4})') %}
+             {% if t[2] | count == 2 %}
+             {{'20'}}{{t[2]}}{{'-'}}{{t[1]}}{{'-'}}{{t[0]}}
+             {% else %}
+             {{t[2]}}{{'-'}}{{t[1]}}{{'-'}}{{t[0]}}
+             {%endif %}
+
+        icon: mdi:calendar-clock
+
       - name: OctoPowerUpStart
         state: >
           {% set t = state_attr('sensor.OctopusPowerUp', 'Subject') 
-            | regex_findall_index('(\d+):(\d+) ([A|P]M)', index=0) %}
-           {% set y = t[0] |int %}
-           {% if 'PM' in t[2] %} {% set x = y+12 %}
-           {% else %} {% set x = y+0 %}
-           {% endif %}
-           {{states('sensor.octopowerupdate', rounded=True, with_unit=True)}}{{' '}}{{x}}{{':'}}{{t[1]}}{{':00'}}
+            | regex_findall_index('(\d{1,2}):(\d{1,2})(\s*)([A-a|P-p][M-m])', index=0) %}
+            {{states('sensor.octopowerupdate', rounded=True, with_unit=True)}}{{'T'}}{{t[0]}}{{':'}}{{t[1]}}{{':00'}}{{t[3]}}
+        icon: mdi:calendar-clock
 
       - name: OctoPowerUpEnd
         state: >
           {% set t = state_attr('sensor.OctopusPowerUp', 'Subject') 
-            | regex_findall_index('(\d+):(\d+) ([A|P]M)', index=1) %}
-           {% set y = t[0] |int %}
-           {% if 'PM' in t[2] %} {% set x = y+12 %}
-           {% else %} {% set x = y+0 %}
-           {% endif %}
-           {{states('sensor.octopowerupdate', rounded=True, with_unit=True)}}{{' '}}{{x}}{{':'}}{{t[1]}}{{':00'}}
- 
+            | regex_findall_index('(\d{1,2}):(\d{1,2})(\s*)([A-a|P-p][M-m])', index=1) %}
+           {{states('sensor.octopowerupdate', rounded=True, with_unit=True)}}{{'T'}}{{t[0]}}{{':'}}{{t[1]}}{{':00'}}{{t[3]}}
+        icon: mdi:calendar-clock
+
       - name: octopowerupstartts
         state: > 
-            {{ as_timestamp(strptime(states('sensor.octopowerupstart'), "%Y-%d-%m %H:%M:%S" ))| int(0) }}
-        icon: "mdi:calendar-clock"
+            {{ as_timestamp(strptime(states('sensor.octopowerupstart'), "%Y-%m-%dT%I:%M:%S%p" ))| int(0) }}
+        icon: mdi:calendar-clock
 
       - name: octopowerupendts
         state: > 
-            {{ as_timestamp(strptime(states('sensor.OctoPowerUpEnd'), "%Y-%d-%m %H:%M:%S" )) | int(0) }}
-        icon: "mdi:calendar-clock"
+            {{ as_timestamp(strptime(states('sensor.OctoPowerUpEnd'), "%Y-%m-%dT%I:%M:%S%p" )) | int(0) }}
+        icon: mdi:calendar-clock
+
+
 
  

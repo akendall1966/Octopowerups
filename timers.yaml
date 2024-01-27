@@ -1,14 +1,14 @@
 template:
     - sensor:
         name: currentTS
-        state : >
+        state: >
             {{as_timestamp(strptime(states('sensor.date_time'),'%Y-%m-%d, %H:%M')) | int(0) }}
         icon: mdi:calendar-cloc
 
     - sensor:
         name: OctoPowerupDuration
         state: >
-                {{ (states('sensor.octopowerupendts') | int(0) - states('sensor.octopowerupstartts') | int(0))/60 | float(0) }}
+                {{ (as_timestamp(strptime(state_attr('calendar.powerups', 'end_time'), "%Y-%m-%d %H:%M:%S")) |int(0) - as_timestamp(strptime(state_attr('calendar.powerups', 'start_time'), "%Y-%m-%d %H:%M:%S")) |int(0)) / 60 | float(0)}}
         icon: mdi:calendar-clock
 
     - sensor:
