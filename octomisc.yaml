@@ -1,0 +1,38 @@
+# Automations
+automation:
+  - id: octospingas
+    alias: Octopus Wheel of Fortune Gas spinner
+    description: 'Spin the Octopus Wheel of Fortune for Gas account automatically monthly'
+    mode: single
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.octopus_energy_a_29529D24_wheel_of_fortune_spins_gas
+        above: 0
+    condition: []
+    action:
+      - repeat:
+          count: "{{ states('sensor.octopus_energy_a_29529D24_wheel_of_fortune_spins_gas') | int(0) }}"
+          sequence:
+            - service: octopus_energy.spin_wheel_of_fortune
+              data: {}
+              target:
+                entity_id: sensor.octopus_energy_a_29529D24_wheel_of_fortune_spins_gas
+
+
+  - id: octospinelec
+    alias: Octopus Wheel of Fortune Electricity spinner
+    description: 'Spin the Octopus Wheel of Fortune for Electricity account automatically monthly'
+    mode: single
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.octopus_energy_a_29529D24_wheel_of_fortune_spins_electricity
+        above: 0
+    condition: []
+    action:
+    - repeat:
+        count: "{{ states('sensor.octopus_energy_a_29529D24_wheel_of_fortune_spins_electricity') | int(0) }}"
+        sequence:
+          - service: octopus_energy.spin_wheel_of_fortune
+            data: {}
+            target:
+              entity_id: sensor.octopus_energy_a_29529D24_wheel_of_fortune_spins_electricity
